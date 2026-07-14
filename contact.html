@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SKALA 문의</title>
+    <style>
+      :root {
+        --bg: #07111f;
+        --text: #f4f7fb;
+        --muted: #9eb0c7;
+        --accent: #49c4a8;
+        --accent-2: #7cb8ff;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Pretendard", "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), #14243d);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0 30px;
+      }
+
+      .brand {
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+
+      nav a {
+        margin-left: 18px;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      nav a:hover { color: var(--text); }
+
+      .card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 28px;
+      }
+
+      h1 {
+        margin-top: 0;
+        font-size: clamp(1.8rem, 3.3vw, 2.6rem);
+      }
+
+      .intro {
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+
+      form {
+        display: grid;
+        gap: 14px;
+      }
+
+      label {
+        font-weight: 600;
+      }
+
+      input, textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+      }
+
+      textarea { min-height: 140px; resize: vertical; }
+
+      button {
+        width: fit-content;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: #04111f;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      footer {
+        padding: 24px 0 0;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="brand">SKALA</div>
+        <nav>
+          <a href="index.html">홈</a>
+          <a href="news.html">뉴스</a>
+          <a href="contact.html">문의</a>
+        </nav>
+      </header>
+
+      <main class="card">
+        <h1>문의하기</h1>
+        <p class="intro">프로젝트나 서비스에 대해 궁금한 점이 있다면 아래 양식으로 보내주세요.</p>
+
+        <form>
+          <label for="name">이름</label>
+          <input id="name" name="name" type="text" placeholder="홍길동" />
+
+          <label for="email">이메일</label>
+          <input id="email" name="email" type="email" placeholder="example@email.com" />
+
+          <label for="message">문의 내용</label>
+          <textarea id="message" name="message" placeholder="궁금한 내용을 입력해 주세요."></textarea>
+
+          <button type="submit">보내기</button>
+        </form>
+      </main>
+
+      <footer>
+        <p>문의: hello@skala.example</p>
+      </footer>
+    </div>
+  </body>
+</html>
