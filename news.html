@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SKALA 뉴스</title>
+    <style>
+      :root {
+        --bg: #07111f;
+        --panel: #0f1d33;
+        --text: #f4f7fb;
+        --muted: #9eb0c7;
+        --accent: #49c4a8;
+        --accent-2: #7cb8ff;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Pretendard", "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), #14243d);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0 30px;
+      }
+
+      .brand {
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+
+      nav a {
+        margin-left: 18px;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      nav a:hover { color: var(--text); }
+
+      h1 {
+        font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+        margin-bottom: 10px;
+      }
+
+      .intro {
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      .news-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .news-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .news-card h2 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 1.2rem;
+      }
+
+      .news-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .date {
+        display: inline-block;
+        margin-bottom: 8px;
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 32px 0 16px;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="brand">SKALA</div>
+        <nav>
+          <a href="index.html">홈</a>
+          <a href="news.html">뉴스</a>
+        </nav>
+      </header>
+
+      <main>
+        <h1>SKALA 뉴스</h1>
+        <p class="intro">최근 업데이트와 서비스 소식을 확인해보세요.</p>
+
+        <section class="news-list">
+          <article class="news-card">
+            <span class="date">2026.07.14</span>
+            <h2>신규 소개 페이지 오픈</h2>
+            <p>SKALA의 브랜드 메시지와 핵심 기능을 한눈에 볼 수 있는 소개 페이지를 공개했습니다.</p>
+          </article>
+
+          <article class="news-card">
+            <span class="date">2026.07.10</span>
+            <h2>사용자 경험 개선 작업 진행</h2>
+            <p>페이지 내 이동성과 가독성을 높이기 위해 레이아웃과 문구를 정리했습니다.</p>
+          </article>
+
+          <article class="news-card">
+            <span class="date">2026.07.01</span>
+            <h2>시작 준비 단계 완료</h2>
+            <p>기본 구조와 콘텐츠 구성을 정리하며, 향후 확장 가능한 기반을 마련했습니다.</p>
+          </article>
+        </section>
+      </main>
+
+      <footer>
+        <p>© 2026 SKALA</p>
+      </footer>
+    </div>
+  </body>
+</html>
