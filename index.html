@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SKALA 소개</title>
+    <style>
+      :root {
+        --bg: #07111f;
+        --panel: #0f1d33;
+        --text: #f4f7fb;
+        --muted: #9eb0c7;
+        --accent: #49c4a8;
+        --accent-2: #7cb8ff;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Pretendard", "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), #14243d);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0 40px;
+      }
+
+      .brand {
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+
+      nav a {
+        margin-left: 18px;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      nav a:hover { color: var(--text); }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 32px;
+        align-items: center;
+        padding: 40px 0 60px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        margin: 0 0 16px;
+      }
+
+      .hero p {
+        color: var(--muted);
+        font-size: 1.05rem;
+        margin: 0 0 24px;
+      }
+
+      .cta-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 18px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .btn-primary {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: #04111f;
+      }
+
+      .btn-secondary {
+        border: 1px solid rgba(255,255,255,0.2);
+        color: var(--text);
+      }
+
+      .card {
+        background: rgba(15, 29, 51, 0.95);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 20px 45px rgba(0,0,0,0.2);
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 26px;
+      }
+
+      .stat {
+        background: rgba(255,255,255,0.03);
+        border-radius: 16px;
+        padding: 14px;
+        text-align: center;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 1.2rem;
+        color: var(--accent);
+      }
+
+      section {
+        padding: 18px 0 36px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+
+      .feature {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .feature h3 { margin-top: 0; }
+
+      footer {
+        padding: 24px 0 40px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      @media (max-width: 860px) {
+        .hero, .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="brand">SKALA</div>
+        <nav>
+          <a href="#about">소개</a>
+          <a href="#features">특징</a>
+          <a href="#contact">문의</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div>
+            <h1>더 스마트한 웹 경험을 만드는 SKALA</h1>
+            <p>
+              SKALA는 사용자 중심의 디자인과 안정적인 기술을 결합해,
+              빠르게 성장하는 서비스에 맞는 솔루션을 제공합니다.
+            </p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="#contact">지금 시작하기</a>
+              <a class="btn btn-secondary" href="#features">더 알아보기</a>
+            </div>
+            <div class="stats">
+              <div class="stat">
+                <strong>100%</strong>
+                사용자 친화적
+              </div>
+              <div class="stat">
+                <strong>24/7</strong>
+                지속 가능한 지원
+              </div>
+              <div class="stat">
+                <strong>Fast</strong>
+                빠른 구현
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h2 id="about">SKALA가 특별한 이유</h2>
+            <p>
+              단순한 페이지 제작을 넘어서, 브랜드의 메시지를 명확히 전달하고
+              실제 사용자가 편하게 이용할 수 있는 구조를 설계합니다.
+            </p>
+            <p>
+              작은 프로젝트부터 성장하는 사업까지, 필요한 기능을 단계적으로
+              확장할 수 있도록 도와드립니다.
+            </p>
+          </div>
+        </section>
+
+        <section id="features">
+          <h2>핵심 특징</h2>
+          <div class="grid">
+            <article class="feature">
+              <h3>빠른 실행</h3>
+              <p>프로토타입부터 완성형 페이지까지 짧은 시간 안에 구현합니다.</p>
+            </article>
+            <article class="feature">
+              <h3>명확한 구조</h3>
+              <p>정보 전달과 사용자 흐름이 자연스럽게 이어지도록 설계합니다.</p>
+            </article>
+            <article class="feature">
+              <h3>유연한 확장</h3>
+              <p>서비스가 커져도 쉽게 확장할 수 있는 기반을 제공합니다.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer id="contact">
+        <p>문의: hello@skala.example</p>
+        <p>© 2026 SKALA</p>
+      </footer>
+    </div>
+  </body>
+</html>
