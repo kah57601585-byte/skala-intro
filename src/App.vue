@@ -1,6 +1,6 @@
 
 <script setup>
-import RefExample from './components/practices/basic/refexample.vue';
+import WheatherMockup from './WeatherMockup.vue';
 
 
 
@@ -9,7 +9,7 @@ import RefExample from './components/practices/basic/refexample.vue';
 <template>
   <div>
 
-    <RefExample />
+    <WheatherMockup />
   </div>
 </template>
 
