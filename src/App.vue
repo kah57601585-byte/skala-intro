@@ -1,15 +1,15 @@
 
 <script setup>
+import SampleOne from './components/practices/basic/SampleOne.vue';
 
-import refexample from './refexample.vue';
+
 
 </script>
 
 <template>
   <div>
 
-    <refexample />
-
+    <SampleOne />
   </div>
 </template>
 
