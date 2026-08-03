@@ -1,6 +1,6 @@
 
 <script setup>
-import SampleOne from './components/practices/basic/SampleOne.vue';
+import RefExample from './components/practices/basic/refexample.vue';
 
 
 
@@ -9,7 +9,7 @@ import SampleOne from './components/practices/basic/SampleOne.vue';
 <template>
   <div>
 
-    <SampleOne />
+    <RefExample />
   </div>
 </template>
 
