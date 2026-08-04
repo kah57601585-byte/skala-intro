@@ -55,12 +55,12 @@ const backdropStyle = computed(() => {
   transition: background 0.6s ease;
 }
 
-/* 맑음: 따뜻한 햇살이 은은하게 퍼지는 느낌 */
+/* 맑음: 파란 하늘 + 밝은 햇살이 쏟아지는 느낌 */
 .theme-clear {
   background:
-    radial-gradient(circle at 50% -5%, rgba(250, 204, 21, 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 82% 15%, rgba(251, 146, 60, 0.3) 0%, transparent 45%),
-    linear-gradient(180deg, #201b0f 0%, #0f1117 55%);
+    radial-gradient(circle at 50% -10%, rgba(255, 244, 168, 0.75) 0%, rgba(255, 196, 61, 0.4) 18%, transparent 42%),
+    radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.25) 0%, transparent 30%),
+    linear-gradient(180deg, #1b6fd8 0%, #2f8de8 22%, #143a66 55%, #0f1117 100%);
   animation: sun-pulse 5s ease-in-out infinite;
 }
 
