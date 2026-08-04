@@ -1,15 +1,11 @@
 
 <script setup>
-import WheatherMockup from './WeatherMockup.vue';
-
-
-
+import WeatherParent from './components/weather/WeatherParent.vue';
 </script>
 
 <template>
   <div>
-
-    <WheatherMockup />
+    <WeatherParent />
   </div>
 </template>
 
