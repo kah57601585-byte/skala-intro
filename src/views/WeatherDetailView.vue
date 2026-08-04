@@ -24,7 +24,8 @@ onMounted(async () => {
   isLoadingLiveWeather.value = true
   try {
     const liveWeather = await fetchWeatherByCityName(city.value.english)
-    Object.assign(city.value, liveWeather)
+    // isLive: 실시간 데이터로 덮어썼음을 표시 (mock 전용 description 문구와 혼동되지 않도록)
+    Object.assign(city.value, liveWeather, { isLive: true })
     weatherThemeStore.setStatus(liveWeather.status)
   } catch (error) {
     console.error(`[날씨 API] ${city.value.name} 실시간 날씨 조회 실패, mock 데이터로 표시합니다.`, error)
@@ -69,9 +70,12 @@ const displayFeelsLike = computed(() => {
         <li v-if="displayFeelsLike != null">🤔 체감 온도: {{ displayFeelsLike }}{{ configStore.unitSymbol }}</li>
         <li>💧 습도: {{ city.humidity }}%</li>
         <li>🌬 풍속: {{ city.windSpeed }} m/s</li>
-        <li v-if="city.precipitationProb != null">☔ 강수확률: {{ city.precipitationProb }}%</li>
+        <!-- precipitationProb는 mock 전용 필드 (Current Weather API엔 강수확률이 없음) -->
+        <li v-if="!city.isLive && city.precipitationProb != null">☔ 강수확률: {{ city.precipitationProb }}%</li>
       </ul>
-      <p class="description">{{ city.description }}</p>
+      <!-- description도 mock 전용 문구라 실시간 데이터일 땐 다른 안내로 대체 -->
+      <p v-if="city.isLive" class="description">🔴 실시간 관측 데이터 기준입니다.</p>
+      <p v-else class="description">{{ city.description }}</p>
     </BaseDashboardCard>
 
     <BaseDashboardCard v-else>

@@ -23,7 +23,8 @@ onMounted(async () => {
     weatherList.value.map(async (city) => {
       try {
         const liveWeather = await fetchWeatherByCityName(city.english)
-        Object.assign(city, liveWeather)
+        // isLive: 실시간 데이터로 덮어썼음을 표시 (mock 전용 description 문구와 혼동되지 않도록)
+        Object.assign(city, liveWeather, { isLive: true })
       } catch (error) {
         console.error(`[날씨 API] ${city.name} 실시간 날씨 조회 실패, mock 데이터로 표시합니다.`, error)
       }
