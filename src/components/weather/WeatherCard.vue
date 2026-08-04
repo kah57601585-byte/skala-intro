@@ -20,8 +20,8 @@ defineEmits(['select-card', 'click-detail'])
     <span v-if="city.temp >= 25" class="tag hot">🔥 더움 (25도 이상)</span>
     <span v-else class="tag cool">❄️ 선선함 (25도 미만)</span>
 
-    <!-- [요구사항 4] .stop 수식어로 버블링 차단 후 상세보기 -->
-    <button class="detail-btn" @click.stop="$emit('click-detail', city.name, city.status)">상세보기</button>
+    <!-- [요구사항 4] .stop 수식어로 버블링 차단 후 상세보기 (도시 id 전달) -->
+    <button class="detail-btn" @click.stop="$emit('click-detail', city.id)">상세보기</button>
   </div>
 </template>
 
