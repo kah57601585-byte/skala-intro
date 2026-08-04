@@ -11,24 +11,38 @@ const route = useRoute()
 const configStore = useConfigStore()
 const weatherThemeStore = useWeatherThemeStore()
 
-// [요구사항] Mount 시점에 라우터 동적 경로(cityId)로 Mock Data에서 도시 객체 선택
+// [요구사항] Mount 시점에 라우터 동적 경로(cityId)로 도시 객체 선택
+// cityId는 도시의 API 조회명(english)을 URL 인코딩한 값. mock 도시든, 검색으로 찾은 도시든
+// 동일한 방식으로 상세 조회가 가능하도록 통일함.
 const city = ref(null)
 const isLoadingLiveWeather = ref(false)
 
 onMounted(async () => {
-  const mockCity = weatherMockData.find((item) => item.id === route.params.cityId)
-  city.value = mockCity ? { ...mockCity } : null
-  if (!city.value) return
+  const cityQuery = decodeURIComponent(route.params.cityId)
+  const mockCity = weatherMockData.find((item) => item.english === cityQuery)
+  // mock에 있는 도시면 한글 이름/설명 등 기본값으로 사용, 없으면 조회명만으로 임시 객체 생성
+  city.value = mockCity ? { ...mockCity } : { id: cityQuery, name: cityQuery, english: cityQuery }
 
-  // [OpenWeatherMap 연동] 실시간 날씨로 mock 값을 덮어씀. 실패 시 mock 값 유지
+  // [OpenWeatherMap 연동] 실시간 날씨로 mock 값을 덮어씀.
   isLoadingLiveWeather.value = true
   try {
-    const liveWeather = await fetchWeatherByCityName(city.value.english)
-    // isLive: 실시간 데이터로 덮어썼음을 표시 (mock 전용 description 문구와 혼동되지 않도록)
-    Object.assign(city.value, liveWeather, { isLive: true })
+    const liveWeather = await fetchWeatherByCityName(cityQuery)
+    if (mockCity) {
+      // isLive: 실시간 데이터로 덮어썼음을 표시 (mock 전용 description 문구와 혼동되지 않도록)
+      // name은 제외: 우리가 지정한 한글 도시명을 API의 영문명으로 덮어쓰지 않기 위함
+      const { name: _liveName, ...liveWeatherWithoutName } = liveWeather
+      Object.assign(city.value, liveWeatherWithoutName, { isLive: true })
+    } else {
+      // mock에 없는(검색으로 찾은) 도시는 API가 알려준 이름을 그대로 사용
+      Object.assign(city.value, liveWeather, { isLive: true })
+    }
     weatherThemeStore.setStatus(liveWeather.status)
   } catch (error) {
-    console.error(`[날씨 API] ${city.value.name} 실시간 날씨 조회 실패, mock 데이터로 표시합니다.`, error)
+    console.error(`[날씨 API] '${cityQuery}' 실시간 날씨 조회 실패`, error)
+    // mock 데이터가 없는(검색 전용) 도시는 API 조회가 실패하면 보여줄 정보가 없음
+    if (!mockCity) {
+      city.value = null
+    }
   } finally {
     isLoadingLiveWeather.value = false
   }
@@ -79,7 +93,7 @@ const displayFeelsLike = computed(() => {
     </BaseDashboardCard>
 
     <BaseDashboardCard v-else>
-      <p>'{{ route.params.cityId }}'에 해당하는 도시의 관측 정보를 찾을 수 없습니다.</p>
+      <p>'{{ decodeURIComponent(route.params.cityId) }}'에 해당하는 도시의 관측 정보를 찾을 수 없습니다.</p>
     </BaseDashboardCard>
   </div>
 </template>
