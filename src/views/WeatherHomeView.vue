@@ -1,17 +1,36 @@
 <script setup>
-import { ref, computed, watch, watchEffect } from 'vue'
+import { ref, computed, watch, watchEffect, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseDashboardCard from '../components/weather/BaseDashboardCard.vue'
 import SearchBar from '../components/weather/SearchBar.vue'
 import WeatherCard from '../components/weather/WeatherCard.vue'
 import { weatherMockData } from '../data/weatherMockData'
 import { useWeatherThemeStore } from '../stores/weatherThemeStore'
+import { fetchWeatherByCityName } from '../api/weatherApi'
 
 const router = useRouter()
 const weatherThemeStore = useWeatherThemeStore()
 
-// [요구사항] 배열 렌더링용 날씨 데이터
-const weatherList = ref(weatherMockData)
+// [요구사항] 배열 렌더링용 날씨 데이터 (mock을 복제해 실시간 데이터로 덮어씀)
+const weatherList = ref(weatherMockData.map((city) => ({ ...city })))
+const isLoadingLiveWeather = ref(false)
+
+// [OpenWeatherMap 연동] 마운트 시 도시별 실시간 날씨를 조회해 mock 값을 덮어씀.
+// 개별 도시 조회가 실패해도 그 도시만 mock 데이터로 남고 나머지는 정상 표시됨.
+onMounted(async () => {
+  isLoadingLiveWeather.value = true
+  await Promise.allSettled(
+    weatherList.value.map(async (city) => {
+      try {
+        const liveWeather = await fetchWeatherByCityName(city.english)
+        Object.assign(city, liveWeather)
+      } catch (error) {
+        console.error(`[날씨 API] ${city.name} 실시간 날씨 조회 실패, mock 데이터로 표시합니다.`, error)
+      }
+    }),
+  )
+  isLoadingLiveWeather.value = false
+})
 
 // 검색 input과 양방향 바인딩될 변수
 const searchQuery = ref('')
@@ -63,7 +82,7 @@ const showDetail = (city) => {
 
     <!-- 날씨 카드 리스트 -->
     <BaseDashboardCard>
-      <h3>📍 지역별 날씨 현황</h3>
+      <h3>📍 지역별 날씨 현황 <span v-if="isLoadingLiveWeather" class="live-badge">실시간 데이터 불러오는 중…</span></h3>
 
       <WeatherCard
         v-for="city in filteredWeatherList"
@@ -105,6 +124,12 @@ const showDetail = (city) => {
   margin: 0 0 4px;
   font-size: 1.05rem;
   color: var(--text);
+}
+
+.live-badge {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 .no-result {
