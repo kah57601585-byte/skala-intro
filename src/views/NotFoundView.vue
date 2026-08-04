@@ -21,6 +21,11 @@
 .not-found h2 {
   margin: 0 0 8px;
   font-size: 1.6rem;
+  font-weight: 800;
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .not-found p {
@@ -29,13 +34,23 @@
 }
 
 .back-link {
-  display: inline-block;
-  color: var(--primary);
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
   text-decoration: none;
+  box-shadow: 0 4px 14px rgba(109, 94, 245, 0.28);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .back-link:hover {
-  text-decoration: underline;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(109, 94, 245, 0.38);
 }
 </style>

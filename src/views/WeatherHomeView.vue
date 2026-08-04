@@ -48,7 +48,7 @@ const showDetail = (id) => {
 
 <template>
   <div class="weather-mockup">
-    <h2>🌤 지역별 날씨 대시보드</h2>
+    <h2>🌤 <span class="gradient-text">지역별 날씨 대시보드</span></h2>
 
     <!-- 도시 검색 -->
     <BaseDashboardCard>
@@ -83,8 +83,16 @@ const showDetail = (id) => {
 }
 
 .weather-mockup h2 {
-  font-size: 1.6rem;
+  font-size: 1.75rem;
+  font-weight: 800;
   margin: 0 0 20px;
+}
+
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .weather-mockup h3 {
@@ -101,10 +109,12 @@ const showDetail = (id) => {
 
 .status-bar {
   padding: 14px;
-  background-color: #eef7ee;
+  background: var(--gradient-cool);
   border-radius: var(--radius-md);
   text-align: center;
-  color: #2e7d32;
-  font-weight: 600;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: var(--shadow-glow);
+  transition: background 0.2s ease;
 }
 </style>

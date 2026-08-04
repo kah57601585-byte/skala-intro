@@ -56,21 +56,33 @@ const displayTemp = computed(() => {
 }
 
 .back-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 20px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   color: var(--primary);
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 700;
+  font-size: 0.85rem;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .back-link:hover {
-  text-decoration: underline;
+  background: #f1eefe;
+  border-color: var(--primary);
 }
 
 .weather-detail h2 {
   margin: 0 0 4px;
   font-size: 1.4rem;
+  font-weight: 800;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .status {
@@ -97,8 +109,9 @@ const displayTemp = computed(() => {
 
 .description {
   margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px dashed var(--border);
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(109, 94, 245, 0.06), rgba(236, 72, 153, 0.06));
   color: var(--text-muted);
   line-height: 1.6;
 }

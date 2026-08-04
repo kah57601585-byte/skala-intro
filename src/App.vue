@@ -30,8 +30,11 @@ import UnitToggler from './components/UnitToggler.vue'
   align-items: center;
   justify-content: space-between;
   padding: 16px 28px;
-  background: var(--surface);
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid rgba(109, 94, 245, 0.1);
 }
 
 .nav-links {
@@ -42,21 +45,22 @@ import UnitToggler from './components/UnitToggler.vue'
 .nav-bar a {
   text-decoration: none;
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
   transition: all 0.2s ease;
 }
 
 .nav-bar a:hover {
-  background: #f1f4fd;
+  background: #f1eefe;
   color: var(--primary);
 }
 
 .nav-bar a.router-link-active {
   color: #fff;
-  background: var(--primary);
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-glow);
 }
 
 .main-content {

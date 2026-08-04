@@ -42,7 +42,8 @@ const displayTemp = computed(() => {
 <style scoped>
 .weather-card {
   position: relative;
-  padding: 18px;
+  overflow: hidden;
+  padding: 18px 18px 18px 26px;
   margin-top: 14px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -54,9 +55,23 @@ const displayTemp = computed(() => {
     border-color 0.15s ease;
 }
 
+.weather-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--gradient-cool);
+}
+
+.weather-card:has(.tag.hot)::before {
+  background: var(--gradient-warm);
+}
+
 .weather-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: var(--shadow-glow);
   border-color: #dbe2fb;
 }
 
@@ -79,34 +94,37 @@ const displayTemp = computed(() => {
   padding: 6px 14px;
   border: none;
   border-radius: 999px;
-  background: var(--primary);
+  background: var(--gradient-primary);
   color: #fff;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease;
+  box-shadow: 0 4px 12px rgba(109, 94, 245, 0.3);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .detail-btn:hover {
-  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(109, 94, 245, 0.4);
 }
 
 .tag {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 999px;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 10px 0 0;
+  color: #fff;
 }
 
 .tag.hot {
-  background-color: #fff1f0;
-  color: #e0392b;
+  background: var(--gradient-warm);
 }
 
 .tag.cool {
-  background-color: #eef3ff;
-  color: var(--primary);
+  background: var(--gradient-cool);
 }
 </style>

@@ -14,20 +14,22 @@ const configStore = useConfigStore()
 
 <style scoped>
 .unit-toggler button {
-  padding: 8px 16px;
-  border: 1px solid var(--border);
+  padding: 8px 18px;
+  border: none;
   border-radius: 999px;
-  background-color: var(--surface);
-  color: var(--text);
+  background: var(--gradient-primary);
+  color: #fff;
   cursor: pointer;
   font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(109, 94, 245, 0.28);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .unit-toggler button:hover {
-  background-color: #f1f4fd;
-  border-color: var(--primary);
-  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(109, 94, 245, 0.38);
 }
 </style>
