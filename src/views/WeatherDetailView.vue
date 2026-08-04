@@ -1,16 +1,28 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDashboardCard from '../components/weather/BaseDashboardCard.vue'
 import { weatherMockData } from '../data/weatherMockData'
+import { useConfigStore } from '../stores/configStore'
 
 const route = useRoute()
+const configStore = useConfigStore()
 
 // [요구사항] Mount 시점에 라우터 동적 경로(cityId)로 Mock Data에서 도시 객체 선택
 const city = ref(null)
 
 onMounted(() => {
   city.value = weatherMockData.find((item) => item.id === route.params.cityId) ?? null
+})
+
+// [Pinia 과제] 단위 설정에 맞춰 기온 변환
+const displayTemp = computed(() => {
+  if (!city.value) return null
+  const rawTemp = city.value.temp
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((rawTemp * 9) / 5 + 32)
+  }
+  return rawTemp
 })
 </script>
 
@@ -22,7 +34,7 @@ onMounted(() => {
       <h2>{{ city.name }} 상세 기상관측 정보</h2>
       <p class="status">현재 상태: {{ city.status }}</p>
       <ul class="detail-list">
-        <li>🌡 기온: {{ city.temp }}°C</li>
+        <li>🌡 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</li>
         <li>💧 습도: {{ city.humidity }}%</li>
         <li>🌬 풍속: {{ city.windSpeed }} m/s</li>
         <li>☔ 강수확률: {{ city.precipitationProb }}%</li>

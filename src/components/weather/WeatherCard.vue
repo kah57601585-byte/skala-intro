@@ -1,6 +1,9 @@
 <script setup>
+import { computed } from 'vue'
+import { useConfigStore } from '../../stores/configStore'
+
 // [요구사항] 선택된 도시 객체를 props로 전달받아 표시
-defineProps({
+const props = defineProps({
   city: {
     type: Object,
     required: true,
@@ -9,12 +12,23 @@ defineProps({
 
 // [요구사항] 카드 선택(select-card)과 상세보기(click-detail)를 부모에게 전달
 defineEmits(['select-card', 'click-detail'])
+
+const configStore = useConfigStore()
+
+// [Pinia 과제] 단위 설정에 맞춰 기온 변환
+const displayTemp = computed(() => {
+  const rawTemp = props.city.temp
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((rawTemp * 9) / 5 + 32)
+  }
+  return rawTemp
+})
 </script>
 
 <template>
   <div class="weather-card" @click="$emit('select-card', city.name)">
     <h4>{{ city.name }} ({{ city.status }})</h4>
-    <p>현재 기온: {{ city.temp }}°C</p>
+    <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
 
     <!-- [요구사항 2] 기온에 따른 조건부 렌더링 -->
     <span v-if="city.temp >= 25" class="tag hot">🔥 더움 (25도 이상)</span>
