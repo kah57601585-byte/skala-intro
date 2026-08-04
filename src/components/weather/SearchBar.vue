@@ -34,6 +34,8 @@ input {
   padding: 10px 14px;
   box-sizing: border-box;
   margin-top: 8px;
+  background: var(--bg);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   font-size: 0.95rem;
@@ -42,10 +44,14 @@ input {
     box-shadow 0.2s ease;
 }
 
+input::placeholder {
+  color: var(--text-muted);
+}
+
 input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(109, 94, 245, 0.18);
+  box-shadow: 0 0 0 3px rgba(139, 124, 246, 0.25);
 }
 
 p {

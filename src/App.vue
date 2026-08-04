@@ -34,7 +34,7 @@ import UnitToggler from './components/UnitToggler.vue'
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm);
-  border-bottom: 1px solid rgba(109, 94, 245, 0.1);
+  border-bottom: 1px solid rgba(139, 124, 246, 0.16);
 }
 
 .nav-links {
@@ -53,7 +53,7 @@ import UnitToggler from './components/UnitToggler.vue'
 }
 
 .nav-bar a:hover {
-  background: #f1eefe;
+  background: var(--hover-surface);
   color: var(--primary);
 }
 

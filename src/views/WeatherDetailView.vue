@@ -71,7 +71,7 @@ const displayTemp = computed(() => {
 }
 
 .back-link:hover {
-  background: #f1eefe;
+  background: var(--hover-surface);
   border-color: var(--primary);
 }
 
@@ -111,7 +111,7 @@ const displayTemp = computed(() => {
   margin-top: 16px;
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(109, 94, 245, 0.06), rgba(236, 72, 153, 0.06));
+  background: linear-gradient(135deg, rgba(139, 124, 246, 0.12), rgba(244, 114, 182, 0.1));
   color: var(--text-muted);
   line-height: 1.6;
 }

@@ -72,7 +72,7 @@ const displayTemp = computed(() => {
 .weather-card:hover {
   transform: translateY(-3px) scale(1.01);
   box-shadow: var(--shadow-glow);
-  border-color: #dbe2fb;
+  border-color: rgba(139, 124, 246, 0.45);
 }
 
 .weather-card h4 {
@@ -99,7 +99,7 @@ const displayTemp = computed(() => {
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(109, 94, 245, 0.3);
+  box-shadow: 0 4px 12px rgba(139, 124, 246, 0.35);
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
@@ -107,7 +107,7 @@ const displayTemp = computed(() => {
 
 .detail-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(109, 94, 245, 0.4);
+  box-shadow: 0 6px 16px rgba(139, 124, 246, 0.45);
 }
 
 .tag {
