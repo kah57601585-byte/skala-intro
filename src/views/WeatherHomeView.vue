@@ -77,22 +77,34 @@ const showDetail = (id) => {
 
 <style scoped>
 .weather-mockup {
-  max-width: 480px;
+  max-width: 560px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
+  padding: 0 20px;
+}
+
+.weather-mockup h2 {
+  font-size: 1.6rem;
+  margin: 0 0 20px;
+}
+
+.weather-mockup h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: var(--text);
 }
 
 .no-result {
-  margin-top: 10px;
-  color: #888;
+  margin-top: 14px;
+  color: var(--text-muted);
   text-align: center;
 }
 
 .status-bar {
-  padding: 12px;
-  background-color: #e8f5e9;
-  border-radius: 6px;
+  padding: 14px;
+  background-color: #eef7ee;
+  border-radius: var(--radius-md);
   text-align: center;
+  color: #2e7d32;
+  font-weight: 600;
 }
 </style>

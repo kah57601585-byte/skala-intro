@@ -7,8 +7,10 @@
 <style scoped>
 .dashboard-card {
   margin-bottom: 20px;
-  padding: 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 </style>

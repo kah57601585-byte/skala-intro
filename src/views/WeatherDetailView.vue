@@ -50,37 +50,56 @@ const displayTemp = computed(() => {
 
 <style scoped>
 .weather-detail {
-  max-width: 480px;
+  max-width: 560px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
+  padding: 0 20px;
 }
 
 .back-link {
   display: inline-block;
-  margin-bottom: 16px;
-  color: #1976d2;
+  margin-bottom: 20px;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9rem;
   text-decoration: none;
 }
 
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.weather-detail h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+
 .status {
-  color: #555;
+  color: var(--text-muted);
+  margin: 0 0 16px;
 }
 
 .detail-list {
   list-style: none;
   padding: 0;
-  margin: 12px 0;
+  margin: 0;
 }
 
 .detail-list li {
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.detail-list li:last-child {
+  border-bottom: none;
 }
 
 .description {
-  margin-top: 12px;
-  color: #444;
-  line-height: 1.5;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+  color: var(--text-muted);
+  line-height: 1.6;
 }
 </style>

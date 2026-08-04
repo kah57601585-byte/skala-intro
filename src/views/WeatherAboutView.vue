@@ -11,16 +11,35 @@
 
 <style scoped>
 .about-view {
-  max-width: 480px;
+  max-width: 560px;
   margin: 0 auto;
   padding: 20px;
-  font-family: sans-serif;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.about-view h2 {
+  margin: 0 0 12px;
+  font-size: 1.4rem;
+}
+
+.about-view p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
 }
 
 .back-link {
   display: inline-block;
-  margin-top: 16px;
-  color: #1976d2;
+  margin-top: 20px;
+  color: var(--primary);
+  font-weight: 600;
   text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 </style>

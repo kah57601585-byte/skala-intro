@@ -23,30 +23,43 @@ import UnitToggler from './components/UnitToggler.vue'
 
 <style scoped>
 .nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid #ddd;
+  padding: 16px 28px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .nav-links {
   display: flex;
-  gap: 20px;
+  gap: 8px;
 }
 
 .nav-bar a {
   text-decoration: none;
-  color: #333;
-  font-weight: 500;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 14px;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+.nav-bar a:hover {
+  background: #f1f4fd;
+  color: var(--primary);
 }
 
 .nav-bar a.router-link-active {
-  color: #1976d2;
-  font-weight: 700;
+  color: #fff;
+  background: var(--primary);
 }
 
 .main-content {
-  padding: 20px 0;
+  padding: 32px 20px 60px;
 }
 </style>

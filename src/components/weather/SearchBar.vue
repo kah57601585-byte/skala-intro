@@ -23,10 +23,35 @@ defineEmits(['update-query'])
 </template>
 
 <style scoped>
+label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
 input {
   width: 100%;
-  padding: 8px;
+  padding: 10px 14px;
   box-sizing: border-box;
-  margin-top: 6px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 109, 245, 0.15);
+}
+
+p {
+  margin-top: 8px;
+  margin-bottom: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 </style>

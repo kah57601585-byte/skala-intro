@@ -42,38 +42,71 @@ const displayTemp = computed(() => {
 <style scoped>
 .weather-card {
   position: relative;
-  padding: 12px;
-  margin-top: 10px;
-  border: 1px solid #eee;
-  border-radius: 6px;
+  padding: 18px;
+  margin-top: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .weather-card:hover {
-  background-color: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #dbe2fb;
+}
+
+.weather-card h4 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.weather-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 .detail-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 16px;
+  right: 16px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.detail-btn:hover {
+  background: var(--primary-dark);
 }
 
 .tag {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  margin: 6px 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 10px 0 0;
 }
 
 .tag.hot {
-  background-color: #ffe0e0;
-  color: #d32f2f;
+  background-color: #fff1f0;
+  color: #e0392b;
 }
 
 .tag.cool {
-  background-color: #e0f0ff;
-  color: #1976d2;
+  background-color: #eef3ff;
+  color: var(--primary);
 }
 </style>

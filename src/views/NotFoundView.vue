@@ -9,16 +9,33 @@
 <style scoped>
 .not-found {
   max-width: 480px;
-  margin: 0 auto;
+  margin: 60px auto 0;
   padding: 40px 20px;
-  font-family: sans-serif;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   text-align: center;
+}
+
+.not-found h2 {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+}
+
+.not-found p {
+  margin: 0 0 20px;
+  color: var(--text-muted);
 }
 
 .back-link {
   display: inline-block;
-  margin-top: 16px;
-  color: #1976d2;
+  color: var(--primary);
+  font-weight: 600;
   text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 </style>
