@@ -28,7 +28,8 @@ const displayTemp = computed(() => {
 
 <template>
   <div class="weather-detail">
-    <RouterLink to="/" class="back-link">← 대시보드로 돌아가기</RouterLink>
+    <!-- .stop: 배경 클릭으로 오인되어 테마가 리셋되지 않도록 전파 차단 -->
+    <RouterLink to="/" class="back-link" @click.stop>← 대시보드로 돌아가기</RouterLink>
 
     <BaseDashboardCard v-if="city">
       <h2>{{ city.name }} 상세 기상관측 정보</h2>

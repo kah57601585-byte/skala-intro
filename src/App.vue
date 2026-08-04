@@ -1,10 +1,25 @@
 
 <script setup>
+import { useRoute } from 'vue-router'
 import UnitToggler from './components/UnitToggler.vue'
+import WeatherBackdrop from './components/WeatherBackdrop.vue'
+import { useWeatherThemeStore } from './stores/weatherThemeStore'
+
+const route = useRoute()
+const weatherThemeStore = useWeatherThemeStore()
+
+// 상세보기 화면에서는 배경을 클릭해도 해당 도시의 테마 색이 유지되도록 리셋을 막음
+const handleBackgroundClick = () => {
+  if (route.name === 'weather-detail') return
+  weatherThemeStore.resetStatus()
+}
 </script>
 
 <template>
-  <div class="app-layout">
+  <WeatherBackdrop />
+
+  <!-- 날씨 카드가 아닌 곳(배경, 네비게이션 등)을 클릭하면 기본 다크 테마로 복귀 -->
+  <div class="app-layout" @click="handleBackgroundClick">
     <!-- [요구사항 2] Navigation Bar + 단위 변경 UI -->
     <nav class="nav-bar">
       <div class="nav-links">

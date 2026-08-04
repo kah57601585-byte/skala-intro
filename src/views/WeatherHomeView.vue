@@ -5,8 +5,10 @@ import BaseDashboardCard from '../components/weather/BaseDashboardCard.vue'
 import SearchBar from '../components/weather/SearchBar.vue'
 import WeatherCard from '../components/weather/WeatherCard.vue'
 import { weatherMockData } from '../data/weatherMockData'
+import { useWeatherThemeStore } from '../stores/weatherThemeStore'
 
 const router = useRouter()
+const weatherThemeStore = useWeatherThemeStore()
 
 // [요구사항] 배열 렌더링용 날씨 데이터
 const weatherList = ref(weatherMockData)
@@ -31,8 +33,10 @@ watchEffect(() => {
 const selectedCityInfo = ref('카드를 클릭하거나 검색해 보세요.')
 
 // 카드(자식)를 클릭했을 때 실행되는 핸들러
-const selectCity = (cityName) => {
-  selectedCityInfo.value = `${cityName}이 선택되었습니다.`
+const selectCity = (city) => {
+  selectedCityInfo.value = `${city.name}이 선택되었습니다.`
+  // [배경 테마 과제] 선택된 도시의 날씨 상태에 맞춰 배경 테마 변경
+  weatherThemeStore.setStatus(city.status)
 }
 
 // watch 이용 selectedCityInfo 감시: 상태바 문구가 바뀔 때마다 콘솔로그 작성
@@ -41,8 +45,10 @@ watch(selectedCityInfo, (newValue) => {
 })
 
 // [요구사항 3] 상세보기 클릭 시 alert 대신 Programmatic Navigation으로 상세 페이지 이동
-const showDetail = (id) => {
-  router.push('/weather/' + id)
+const showDetail = (city) => {
+  // 카드를 먼저 선택하지 않고 바로 상세보기를 눌러도 해당 도시의 배경 테마가 적용되도록 함
+  weatherThemeStore.setStatus(city.status)
+  router.push('/weather/' + city.id)
 }
 </script>
 
