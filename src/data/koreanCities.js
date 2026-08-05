@@ -39,7 +39,7 @@ export const koreanCities = [
   { name: '안성시', english: 'Anseong,KR' },
   { name: '김포시', english: 'Gimpo-si,KR' },
   { name: '화성시', english: 'Hwaseong,KR' },
-  { name: '광주(경기도)', english: 'Gwangju,KR' },
+  { name: '광주시(경기도)', english: 'Gwangju,KR' },
   { name: '양주시', english: 'Yangju,KR' },
   { name: '포천시', english: 'Pocheon-si,KR' },
   { name: '여주시', english: 'Yeoju,KR' },

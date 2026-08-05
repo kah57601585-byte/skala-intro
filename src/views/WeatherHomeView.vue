@@ -5,14 +5,12 @@ import BaseDashboardCard from '../components/weather/BaseDashboardCard.vue'
 import SearchBar from '../components/weather/SearchBar.vue'
 import WeatherCard from '../components/weather/WeatherCard.vue'
 import { weatherMockData } from '../data/weatherMockData'
-import { findKoreanCity } from '../data/koreanCities'
+import { koreanCities } from '../data/koreanCities'
 import { useWeatherThemeStore } from '../stores/weatherThemeStore'
-import { useConfigStore } from '../stores/configStore'
 import { fetchWeatherByQuery } from '../api/weatherApi'
 
 const router = useRouter()
 const weatherThemeStore = useWeatherThemeStore()
-const configStore = useConfigStore()
 
 // [요구사항] 배열 렌더링용 날씨 데이터 (mock을 복제해 실시간 데이터로 덮어씀)
 const weatherList = ref(weatherMockData.map((city) => ({ ...city })))
@@ -48,72 +46,48 @@ const filteredWeatherList = computed(() => {
   return weatherList.value.filter((city) => city.name.includes(searchQuery.value))
 })
 
-// [대한민국 도시 검색] 목록에 없는 '시'는 한글 이름으로 찾아 OpenWeatherMap에서 조회.
-// 바로 목록에 넣지 않고 미리보기로 보여준 뒤, '추가' 버튼을 눌러야 목록에 반영됨.
-const isSearchingApi = ref(false)
-const apiSearchError = ref('')
-const searchResult = ref(null)
+// [대한민국 도시 검색] 입력하는 즉시(엔터 없이) 대한민국 도시 전체 사전에서
+// 검색어가 포함된, 아직 목록에 없는 도시를 실시간으로 모두 추천해 보여줌 (목록은 스크롤 가능)
+const suggestedCities = computed(() => {
+  const trimmed = searchQuery.value.trim()
+  if (!trimmed) return []
 
-// 검색어를 바꾸면 이전 검색 결과/에러는 더 이상 유효하지 않으므로 초기화
+  const addedKeys = new Set(weatherList.value.map((city) => city.english))
+  return koreanCities.filter((city) => city.name.includes(trimmed) && !addedKeys.has(city.english))
+})
+
+const addingCityKey = ref(null)
+const apiSearchError = ref('')
+
+// 검색어를 바꾸면 이전 에러는 더 이상 유효하지 않으므로 초기화
 watch(searchQuery, () => {
-  searchResult.value = null
   apiSearchError.value = ''
 })
 
-const searchCityFromApi = async () => {
-  const trimmedQuery = searchQuery.value.trim()
-  if (!trimmedQuery) return
-
-  // 한글 도시명 → 영문 조회명 변환 (대한민국 '시' 단위 도시만 지원)
-  const matchedCity = findKoreanCity(trimmedQuery)
-  if (!matchedCity) {
-    apiSearchError.value = `'${trimmedQuery}'는 등록된 대한민국 도시 목록에 없습니다. 시 단위 도시명으로 검색해 보세요. (예: 전주시, 통영시, 목포시)`
-    return
-  }
-
-  isSearchingApi.value = true
+// 추천 목록의 '추가' 버튼 클릭 시 해당 도시의 실시간 날씨를 조회해 목록에 반영
+const addCityFromSuggestion = async (candidate) => {
+  addingCityKey.value = candidate.name
   apiSearchError.value = ''
-  searchResult.value = null
   try {
-    const liveWeather = await fetchWeatherByQuery(matchedCity.english)
-    searchResult.value = {
-      id: matchedCity.english,
-      english: matchedCity.english,
+    const liveWeather = await fetchWeatherByQuery(candidate.english)
+    const newCity = {
+      // id는 name 기준: 경기도 광주시/광주광역시처럼 english(조회 키)가 같은 도시가 있어
+      // english를 id로 쓰면 목록/추천에서 키 충돌이 생김
+      id: candidate.name,
+      english: candidate.english,
       isLive: true,
       ...liveWeather,
-      name: matchedCity.name, // 한글 도시명은 사전 값을 우선 사용
+      name: candidate.name, // 한글 도시명은 사전 값을 우선 사용
     }
+    weatherList.value.unshift(newCity)
+    selectedCityInfo.value = `${newCity.name}이(가) 목록에 추가되었습니다.`
+    weatherThemeStore.setStatus(newCity.status)
+    searchQuery.value = ''
   } catch (error) {
-    apiSearchError.value = `'${matchedCity.name}'의 날씨 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`
+    apiSearchError.value = `'${candidate.name}'의 날씨 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`
   } finally {
-    isSearchingApi.value = false
+    addingCityKey.value = null
   }
-}
-
-// 검색 미리보기 카드의 기온도 단위 설정에 맞춰 변환
-const searchResultDisplayTemp = computed(() => {
-  if (!searchResult.value) return null
-  const rawTemp = searchResult.value.temp
-  return configStore.unit === 'fahrenheit' ? Math.round((rawTemp * 9) / 5 + 32) : rawTemp
-})
-
-// 검색 미리보기 카드의 '추가' 버튼 클릭 시 실제 목록에 반영
-const addSearchResultToList = () => {
-  if (!searchResult.value) return
-
-  const existingIndex = weatherList.value.findIndex(
-    (existing) => existing.english.toLowerCase() === searchResult.value.english.toLowerCase(),
-  )
-  if (existingIndex !== -1) {
-    Object.assign(weatherList.value[existingIndex], searchResult.value)
-  } else {
-    weatherList.value.unshift(searchResult.value)
-  }
-
-  selectedCityInfo.value = `${searchResult.value.name}이(가) 목록에 추가되었습니다.`
-  weatherThemeStore.setStatus(searchResult.value.status)
-  searchResult.value = null
-  searchQuery.value = ''
 }
 
 // [목록 제거 과제] 카드의 제거 버튼 클릭 시 목록에서 제외
@@ -173,28 +147,32 @@ const showDetail = (city) => {
         @remove="removeCity"
       />
 
-      <!-- [대한민국 도시 검색] 목록에 없는 '시'는 한글 이름으로 OpenWeatherMap에서 검색 후 미리보기로 표시 -->
-      <div v-if="filteredWeatherList.length === 0" class="no-result-block">
-        <p class="no-result">
-          {{ searchQuery.trim() ? '검색 결과가 일치하는 도시가 없습니다.' : '표시할 도시가 없습니다. 위에서 도시를 검색해 보세요.' }}
-        </p>
+      <p v-if="filteredWeatherList.length === 0" class="no-result">
+        {{ searchQuery.trim() ? '목록에 일치하는 도시가 없습니다.' : '표시할 도시가 없습니다. 위에서 도시를 검색해 보세요.' }}
+      </p>
 
-        <template v-if="searchQuery.trim()">
-          <!-- 검색된 도시 미리보기 + 목록 추가 버튼 -->
-          <div v-if="searchResult" class="search-preview">
-            <div class="search-preview-info">
-              <h4>{{ searchResult.name }} ({{ searchResult.status }})</h4>
-              <p>현재 기온: {{ searchResultDisplayTemp }}{{ configStore.unitSymbol }}</p>
-            </div>
-            <button class="add-btn" @click="addSearchResultToList">➕ 리스트에 추가</button>
+      <!-- [대한민국 도시 검색] 입력하는 즉시 대한민국 도시 사전에서 매칭되는, 아직 목록에 없는 도시를 모두 추천 -->
+      <div v-if="suggestedCities.length > 0" class="suggestion-block">
+        <p class="suggestion-label">🇰🇷 추가할 수 있는 도시 ({{ suggestedCities.length }}개)</p>
+        <div class="suggestion-scroll">
+          <div v-for="candidate in suggestedCities" :key="candidate.name" class="suggestion-row">
+            <span>{{ candidate.name }}</span>
+            <button
+              class="add-btn"
+              :disabled="addingCityKey === candidate.name"
+              @click="addCityFromSuggestion(candidate)"
+            >
+              {{ addingCityKey === candidate.name ? '추가 중…' : '➕ 추가' }}
+            </button>
           </div>
-          <button v-else class="api-search-btn" :disabled="isSearchingApi" @click="searchCityFromApi">
-            {{ isSearchingApi ? '검색 중…' : `🇰🇷 '${searchQuery}' 대한민국 도시에서 찾기` }}
-          </button>
-
-          <p v-if="apiSearchError" class="api-search-error">{{ apiSearchError }}</p>
-        </template>
+        </div>
       </div>
+
+      <p v-else-if="searchQuery.trim() && filteredWeatherList.length === 0" class="no-result">
+        '{{ searchQuery }}'와 일치하는 대한민국 도시가 없습니다. 시 단위 도시명으로 검색해 보세요. (예: 전주시, 통영시, 목포시)
+      </p>
+
+      <p v-if="apiSearchError" class="api-search-error">{{ apiSearchError }}</p>
     </BaseDashboardCard>
 
     <!-- 카드 클릭 결과가 표시되는 상태바 -->
@@ -234,38 +212,41 @@ const showDetail = (city) => {
   color: var(--text-muted);
 }
 
-.no-result-block {
-  margin-top: 14px;
+.no-result {
+  margin: 14px 0 0;
+  color: var(--text-muted);
   text-align: center;
 }
 
-.no-result {
-  margin: 0 0 12px;
-  color: var(--text-muted);
+.suggestion-block {
+  margin-top: 14px;
 }
 
-.search-preview {
+.suggestion-label {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.suggestion-scroll {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.suggestion-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 10px 14px;
+  margin-top: 8px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  text-align: left;
-}
-
-.search-preview-info h4 {
-  margin: 0 0 4px;
-  font-size: 1rem;
   color: var(--text);
-}
-
-.search-preview-info p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .add-btn {
@@ -281,36 +262,16 @@ const showDetail = (city) => {
   box-shadow: 0 4px 12px rgba(139, 124, 246, 0.35);
   transition:
     transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.add-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(139, 124, 246, 0.45);
-}
-
-.api-search-btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 999px;
-  background: var(--gradient-primary);
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(139, 124, 246, 0.32);
-  transition:
-    transform 0.15s ease,
     box-shadow 0.15s ease,
     opacity 0.15s ease;
 }
 
-.api-search-btn:hover:not(:disabled) {
+.add-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(139, 124, 246, 0.42);
+  box-shadow: 0 6px 16px rgba(139, 124, 246, 0.45);
 }
 
-.api-search-btn:disabled {
+.add-btn:disabled {
   opacity: 0.6;
   cursor: default;
 }
@@ -319,6 +280,7 @@ const showDetail = (city) => {
   margin: 10px 0 0;
   color: #f87171;
   font-size: 0.85rem;
+  text-align: center;
 }
 
 .status-bar {
