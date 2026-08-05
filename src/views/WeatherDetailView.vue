@@ -3,9 +3,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDashboardCard from '../components/weather/BaseDashboardCard.vue'
 import { weatherMockData } from '../data/weatherMockData'
+import { koreanCities } from '../data/koreanCities'
 import { useConfigStore } from '../stores/configStore'
 import { useWeatherThemeStore } from '../stores/weatherThemeStore'
-import { fetchWeatherByCityName } from '../api/weatherApi'
+import { fetchWeatherByQuery } from '../api/weatherApi'
 
 const route = useRoute()
 const configStore = useConfigStore()
@@ -20,20 +21,23 @@ const isLoadingLiveWeather = ref(false)
 onMounted(async () => {
   const cityQuery = decodeURIComponent(route.params.cityId)
   const mockCity = weatherMockData.find((item) => item.english === cityQuery)
-  // mock에 있는 도시면 한글 이름/설명 등 기본값으로 사용, 없으면 조회명만으로 임시 객체 생성
-  city.value = mockCity ? { ...mockCity } : { id: cityQuery, name: cityQuery, english: cityQuery }
+  // mock 도시 사전에도 없으면 대한민국 도시 사전에서 한글 이름을 찾아옴 (검색으로 추가한 도시)
+  const koreanCity = koreanCities.find((item) => item.english === cityQuery)
+  const knownName = mockCity?.name ?? koreanCity?.name
+
+  city.value = mockCity ? { ...mockCity } : { id: cityQuery, name: knownName ?? cityQuery, english: cityQuery }
 
   // [OpenWeatherMap 연동] 실시간 날씨로 mock 값을 덮어씀.
   isLoadingLiveWeather.value = true
   try {
-    const liveWeather = await fetchWeatherByCityName(cityQuery)
-    if (mockCity) {
+    const liveWeather = await fetchWeatherByQuery(cityQuery)
+    if (knownName) {
       // isLive: 실시간 데이터로 덮어썼음을 표시 (mock 전용 description 문구와 혼동되지 않도록)
-      // name은 제외: 우리가 지정한 한글 도시명을 API의 영문명으로 덮어쓰지 않기 위함
+      // name은 제외: 우리가 알고 있는 한글 도시명을 API의 영문명으로 덮어쓰지 않기 위함
       const { name: _liveName, ...liveWeatherWithoutName } = liveWeather
       Object.assign(city.value, liveWeatherWithoutName, { isLive: true })
     } else {
-      // mock에 없는(검색으로 찾은) 도시는 API가 알려준 이름을 그대로 사용
+      // 사전에 없는 도시는 API가 알려준 이름을 그대로 사용
       Object.assign(city.value, liveWeather, { isLive: true })
     }
     weatherThemeStore.setStatus(liveWeather.status)

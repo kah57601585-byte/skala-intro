@@ -2,7 +2,7 @@
 export const weatherMockData = [
   {
     id: 'city_01',
-    name: '서울',
+    name: '서울특별시',
     // [OpenWeatherMap 연동] 실시간 조회용 영문 도시명
     english: 'Seoul,KR',
     temp: 28,
@@ -14,7 +14,7 @@ export const weatherMockData = [
   },
   {
     id: 'city_02',
-    name: '수원',
+    name: '수원시',
     english: 'Suwon,KR',
     temp: 24,
     status: '비',
@@ -25,7 +25,7 @@ export const weatherMockData = [
   },
   {
     id: 'city_03',
-    name: '부산',
+    name: '부산광역시',
     english: 'Busan,KR',
     temp: 26,
     status: '구름',

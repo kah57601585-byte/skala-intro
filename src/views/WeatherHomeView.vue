@@ -5,11 +5,14 @@ import BaseDashboardCard from '../components/weather/BaseDashboardCard.vue'
 import SearchBar from '../components/weather/SearchBar.vue'
 import WeatherCard from '../components/weather/WeatherCard.vue'
 import { weatherMockData } from '../data/weatherMockData'
+import { findKoreanCity } from '../data/koreanCities'
 import { useWeatherThemeStore } from '../stores/weatherThemeStore'
-import { fetchWeatherByCityName } from '../api/weatherApi'
+import { useConfigStore } from '../stores/configStore'
+import { fetchWeatherByQuery } from '../api/weatherApi'
 
 const router = useRouter()
 const weatherThemeStore = useWeatherThemeStore()
+const configStore = useConfigStore()
 
 // [요구사항] 배열 렌더링용 날씨 데이터 (mock을 복제해 실시간 데이터로 덮어씀)
 const weatherList = ref(weatherMockData.map((city) => ({ ...city })))
@@ -22,7 +25,7 @@ onMounted(async () => {
   await Promise.allSettled(
     weatherList.value.map(async (city) => {
       try {
-        const { name: _liveName, ...liveWeather } = await fetchWeatherByCityName(city.english)
+        const { name: _liveName, ...liveWeather } = await fetchWeatherByQuery(city.english)
         // isLive: 실시간 데이터로 덮어썼음을 표시 (mock 전용 description 문구와 혼동되지 않도록)
         // name은 제외: 우리가 지정한 한글 도시명(서울/수원/부산)을 API의 영문명으로 덮어쓰지 않기 위함
         Object.assign(city, liveWeather, { isLive: true })
@@ -45,42 +48,77 @@ const filteredWeatherList = computed(() => {
   return weatherList.value.filter((city) => city.name.includes(searchQuery.value))
 })
 
-// [API 전체 도시 검색] 목록에 없는 도시는 OpenWeatherMap에서 직접 검색해 추가
+// [대한민국 도시 검색] 목록에 없는 '시'는 한글 이름으로 찾아 OpenWeatherMap에서 조회.
+// 바로 목록에 넣지 않고 미리보기로 보여준 뒤, '추가' 버튼을 눌러야 목록에 반영됨.
 const isSearchingApi = ref(false)
 const apiSearchError = ref('')
+const searchResult = ref(null)
+
+// 검색어를 바꾸면 이전 검색 결과/에러는 더 이상 유효하지 않으므로 초기화
+watch(searchQuery, () => {
+  searchResult.value = null
+  apiSearchError.value = ''
+})
 
 const searchCityFromApi = async () => {
   const trimmedQuery = searchQuery.value.trim()
   if (!trimmedQuery) return
 
+  // 한글 도시명 → 영문 조회명 변환 (대한민국 '시' 단위 도시만 지원)
+  const matchedCity = findKoreanCity(trimmedQuery)
+  if (!matchedCity) {
+    apiSearchError.value = `'${trimmedQuery}'는 등록된 대한민국 도시 목록에 없습니다. 시 단위 도시명으로 검색해 보세요. (예: 전주시, 통영시, 목포시)`
+    return
+  }
+
   isSearchingApi.value = true
   apiSearchError.value = ''
+  searchResult.value = null
   try {
-    const liveWeather = await fetchWeatherByCityName(trimmedQuery)
-    const newCity = {
-      id: trimmedQuery,
-      english: trimmedQuery,
+    const liveWeather = await fetchWeatherByQuery(matchedCity.english)
+    searchResult.value = {
+      id: matchedCity.english,
+      english: matchedCity.english,
       isLive: true,
       ...liveWeather,
+      name: matchedCity.name, // 한글 도시명은 사전 값을 우선 사용
     }
-
-    const existingIndex = weatherList.value.findIndex(
-      (existing) => existing.english.toLowerCase() === trimmedQuery.toLowerCase(),
-    )
-    if (existingIndex !== -1) {
-      Object.assign(weatherList.value[existingIndex], newCity)
-    } else {
-      weatherList.value.unshift(newCity)
-    }
-
-    searchQuery.value = ''
-    selectedCityInfo.value = `${newCity.name}이(가) 검색 결과에 추가되었습니다.`
-    weatherThemeStore.setStatus(newCity.status)
   } catch (error) {
-    apiSearchError.value = `'${trimmedQuery}' 도시를 찾을 수 없습니다. 영문 이름으로 검색해 보세요. (예: Tokyo, London, New York)`
+    apiSearchError.value = `'${matchedCity.name}'의 날씨 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`
   } finally {
     isSearchingApi.value = false
   }
+}
+
+// 검색 미리보기 카드의 기온도 단위 설정에 맞춰 변환
+const searchResultDisplayTemp = computed(() => {
+  if (!searchResult.value) return null
+  const rawTemp = searchResult.value.temp
+  return configStore.unit === 'fahrenheit' ? Math.round((rawTemp * 9) / 5 + 32) : rawTemp
+})
+
+// 검색 미리보기 카드의 '추가' 버튼 클릭 시 실제 목록에 반영
+const addSearchResultToList = () => {
+  if (!searchResult.value) return
+
+  const existingIndex = weatherList.value.findIndex(
+    (existing) => existing.english.toLowerCase() === searchResult.value.english.toLowerCase(),
+  )
+  if (existingIndex !== -1) {
+    Object.assign(weatherList.value[existingIndex], searchResult.value)
+  } else {
+    weatherList.value.unshift(searchResult.value)
+  }
+
+  selectedCityInfo.value = `${searchResult.value.name}이(가) 목록에 추가되었습니다.`
+  weatherThemeStore.setStatus(searchResult.value.status)
+  searchResult.value = null
+  searchQuery.value = ''
+}
+
+// [목록 제거 과제] 카드의 제거 버튼 클릭 시 목록에서 제외
+const removeCity = (cityId) => {
+  weatherList.value = weatherList.value.filter((city) => city.id !== cityId)
 }
 
 // searchQuery 감시 (watchEffect 이용): 검색어가 바뀔 때마다 콘솔로그 작성
@@ -132,15 +170,30 @@ const showDetail = (city) => {
         :city="city"
         @select-card="selectCity"
         @click-detail="showDetail"
+        @remove="removeCity"
       />
 
-      <!-- [API 전체 도시 검색] 목록에 없는 도시명이면 OpenWeatherMap에서 직접 검색해 추가 -->
+      <!-- [대한민국 도시 검색] 목록에 없는 '시'는 한글 이름으로 OpenWeatherMap에서 검색 후 미리보기로 표시 -->
       <div v-if="filteredWeatherList.length === 0" class="no-result-block">
-        <p class="no-result">검색 결과가 일치하는 도시가 없습니다.</p>
-        <button class="api-search-btn" :disabled="isSearchingApi" @click="searchCityFromApi">
-          {{ isSearchingApi ? '전 세계 도시에서 검색 중…' : `🌍 '${searchQuery}' 전 세계 날씨에서 검색하기` }}
-        </button>
-        <p v-if="apiSearchError" class="api-search-error">{{ apiSearchError }}</p>
+        <p class="no-result">
+          {{ searchQuery.trim() ? '검색 결과가 일치하는 도시가 없습니다.' : '표시할 도시가 없습니다. 위에서 도시를 검색해 보세요.' }}
+        </p>
+
+        <template v-if="searchQuery.trim()">
+          <!-- 검색된 도시 미리보기 + 목록 추가 버튼 -->
+          <div v-if="searchResult" class="search-preview">
+            <div class="search-preview-info">
+              <h4>{{ searchResult.name }} ({{ searchResult.status }})</h4>
+              <p>현재 기온: {{ searchResultDisplayTemp }}{{ configStore.unitSymbol }}</p>
+            </div>
+            <button class="add-btn" @click="addSearchResultToList">➕ 리스트에 추가</button>
+          </div>
+          <button v-else class="api-search-btn" :disabled="isSearchingApi" @click="searchCityFromApi">
+            {{ isSearchingApi ? '검색 중…' : `🇰🇷 '${searchQuery}' 대한민국 도시에서 찾기` }}
+          </button>
+
+          <p v-if="apiSearchError" class="api-search-error">{{ apiSearchError }}</p>
+        </template>
       </div>
     </BaseDashboardCard>
 
@@ -189,6 +242,51 @@ const showDetail = (city) => {
 .no-result {
   margin: 0 0 12px;
   color: var(--text-muted);
+}
+
+.search-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+
+.search-preview-info h4 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.search-preview-info p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.add-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(139, 124, 246, 0.35);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.add-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(139, 124, 246, 0.45);
 }
 
 .api-search-btn {

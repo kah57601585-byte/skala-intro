@@ -10,8 +10,8 @@ const props = defineProps({
   },
 })
 
-// [요구사항] 카드 선택(select-card)과 상세보기(click-detail)를 부모에게 전달
-defineEmits(['select-card', 'click-detail'])
+// [요구사항] 카드 선택(select-card), 상세보기(click-detail), 목록 제거(remove)를 부모에게 전달
+defineEmits(['select-card', 'click-detail', 'remove'])
 
 const configStore = useConfigStore()
 
@@ -34,8 +34,12 @@ const displayTemp = computed(() => {
     <span v-if="city.temp >= 25" class="tag hot">🔥 더움 (25도 이상)</span>
     <span v-else class="tag cool">❄️ 선선함 (25도 미만)</span>
 
-    <!-- [요구사항 4] .stop 수식어로 버블링 차단 후 상세보기 (도시 객체 전달) -->
-    <button class="detail-btn" @click.stop="$emit('click-detail', city)">상세보기</button>
+    <div class="card-actions">
+      <!-- 목록에서 제거 -->
+      <button class="remove-btn" title="목록에서 제거" @click.stop="$emit('remove', city.id)">✕</button>
+      <!-- [요구사항 4] .stop 수식어로 버블링 차단 후 상세보기 (도시 객체 전달) -->
+      <button class="detail-btn" @click.stop="$emit('click-detail', city)">상세보기</button>
+    </div>
   </div>
 </template>
 
@@ -87,10 +91,16 @@ const displayTemp = computed(() => {
   font-size: 0.95rem;
 }
 
-.detail-btn {
+.card-actions {
   position: absolute;
   top: 16px;
   right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-btn {
   padding: 6px 14px;
   border: none;
   border-radius: 999px;
@@ -108,6 +118,26 @@ const displayTemp = computed(() => {
 .detail-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(139, 124, 246, 0.45);
+}
+
+.remove-btn {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.remove-btn:hover {
+  background: #3a1418;
+  border-color: #f87171;
+  color: #f87171;
 }
 
 .tag {

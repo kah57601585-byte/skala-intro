@@ -8,7 +8,10 @@ const weatherThemeStore = useWeatherThemeStore()
 const THEME_CLASS_MAP = {
   맑음: 'theme-clear',
   비: 'theme-rain',
+  이슬비: 'theme-rain',
   구름: 'theme-cloudy',
+  구름조금: 'theme-cloudy',
+  구름많음: 'theme-cloudy',
   흐림: 'theme-cloudy',
   눈: 'theme-snow',
   안개: 'theme-fog',
