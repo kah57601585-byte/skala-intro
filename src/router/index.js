@@ -18,6 +18,11 @@ const routes = [
     component: () => import('../views/WeatherAboutView.vue'),
   },
   {
+    path: '/vuetify-demo',
+    name: 'vuetify-demo',
+    component: () => import('../views/VuetifyDemoView.vue'),
+  },
+  {
     // [요구사항 1] Catch-all Route
     path: '/:pathMatch(.*)*',
     name: 'not-found',

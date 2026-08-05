@@ -23,35 +23,69 @@ const displayTemp = computed(() => {
   }
   return rawTemp
 })
+
+// 날씨 상태 → mdi 아이콘 매핑 (매핑에 없으면 구름 아이콘으로 대체)
+const STATUS_ICON_MAP = {
+  맑음: 'mdi-weather-sunny',
+  구름조금: 'mdi-weather-partly-cloudy',
+  구름: 'mdi-weather-cloudy',
+  구름많음: 'mdi-weather-cloudy',
+  흐림: 'mdi-weather-cloudy',
+  비: 'mdi-weather-rainy',
+  이슬비: 'mdi-weather-partly-rainy',
+  눈: 'mdi-weather-snowy',
+  안개: 'mdi-weather-fog',
+  천둥번개: 'mdi-weather-lightning',
+}
+const weatherIcon = computed(() => STATUS_ICON_MAP[props.city.status] ?? 'mdi-weather-cloudy')
+
+// [요구사항 2] 기온에 따른 색상 구분 (25도 이상이면 강조색)
+const iconColor = computed(() => (props.city.temp >= 25 ? 'error' : 'primary'))
 </script>
 
 <template>
-  <div class="weather-card" @click.stop="$emit('select-card', city)">
-    <h4>{{ city.name }} ({{ city.status }})</h4>
-    <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
+  <v-card class="weather-card" @click.stop="$emit('select-card', city)">
+    <v-card-item :title="city.name">
+      <template #subtitle>{{ city.status }}</template>
+    </v-card-item>
 
-    <!-- [요구사항 2] 기온에 따른 조건부 렌더링 -->
-    <span v-if="city.temp >= 25" class="tag hot">🔥 더움 (25도 이상)</span>
-    <span v-else class="tag cool">❄️ 선선함 (25도 미만)</span>
+    <v-card-text class="py-0">
+      <v-row class="align-center" density="compact">
+        <v-col cols="6" class="text-h4 font-weight-light">
+          {{ displayTemp }}{{ configStore.unitSymbol }}
+        </v-col>
+        <v-col cols="6" class="text-right">
+          <v-icon :color="iconColor" :icon="weatherIcon" size="56" />
+        </v-col>
+      </v-row>
+    </v-card-text>
 
-    <div class="card-actions">
-      <!-- 목록에서 제거 -->
-      <button class="remove-btn" title="목록에서 제거" @click.stop="$emit('remove', city.id)">✕</button>
-      <!-- [요구사항 4] .stop 수식어로 버블링 차단 후 상세보기 (도시 객체 전달) -->
-      <button class="detail-btn" @click.stop="$emit('click-detail', city)">상세보기</button>
+    <div class="d-flex py-2 justify-space-between">
+      <v-list-item density="compact" prepend-icon="mdi-weather-windy">
+        <v-list-item-subtitle>{{ city.windSpeed }} m/s</v-list-item-subtitle>
+      </v-list-item>
+
+      <v-list-item density="compact" prepend-icon="mdi-water-percent">
+        <v-list-item-subtitle>{{ city.humidity }}%</v-list-item-subtitle>
+      </v-list-item>
     </div>
-  </div>
+
+    <v-divider />
+
+    <v-card-actions>
+      <v-btn variant="text" @click.stop="$emit('remove', city.id)">제거</v-btn>
+      <v-spacer />
+      <v-btn color="primary" variant="text" @click.stop="$emit('click-detail', city)">상세보기</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <style scoped>
 .weather-card {
-  position: relative;
-  overflow: hidden;
-  padding: 18px 18px 18px 26px;
   margin-top: 14px;
-  background: var(--surface);
+  background: var(--surface) !important;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  color: var(--text) !important;
   cursor: pointer;
   transition:
     transform 0.15s ease,
@@ -59,102 +93,18 @@ const displayTemp = computed(() => {
     border-color 0.15s ease;
 }
 
-.weather-card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  background: var(--gradient-cool);
-}
-
-.weather-card:has(.tag.hot)::before {
-  background: var(--gradient-warm);
-}
-
 .weather-card:hover {
   transform: translateY(-3px) scale(1.01);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-glow) !important;
   border-color: rgba(139, 124, 246, 0.45);
 }
 
-.weather-card h4 {
-  margin: 0 0 6px;
-  font-size: 1.05rem;
-  color: var(--text);
-}
-
-.weather-card p {
-  margin: 0;
+:deep(.v-card-item__content .v-card-subtitle) {
   color: var(--text-muted);
-  font-size: 0.95rem;
 }
 
-.card-actions {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.detail-btn {
-  padding: 6px 14px;
-  border: none;
-  border-radius: 999px;
-  background: var(--gradient-primary);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(139, 124, 246, 0.35);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.detail-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(139, 124, 246, 0.45);
-}
-
-.remove-btn {
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.remove-btn:hover {
-  background: #3a1418;
-  border-color: #f87171;
-  color: #f87171;
-}
-
-.tag {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin: 10px 0 0;
-  color: #fff;
-}
-
-.tag.hot {
-  background: var(--gradient-warm);
-}
-
-.tag.cool {
-  background: var(--gradient-cool);
+:deep(.v-list-item-subtitle) {
+  color: var(--text-muted) !important;
+  opacity: 1;
 }
 </style>
