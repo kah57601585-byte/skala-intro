@@ -4,16 +4,16 @@ import { useRouter } from 'vue-router'
 import BaseDashboardCard from '../components/weather/BaseDashboardCard.vue'
 import SearchBar from '../components/weather/SearchBar.vue'
 import WeatherCard from '../components/weather/WeatherCard.vue'
-import { weatherMockData } from '../data/weatherMockData'
 import { koreanCities } from '../data/koreanCities'
 import { useWeatherThemeStore } from '../stores/weatherThemeStore'
+import { useCityListStore } from '../stores/cityListStore'
 import { fetchWeatherByQuery } from '../api/weatherApi'
 
 const router = useRouter()
 const weatherThemeStore = useWeatherThemeStore()
+// [요구사항] 배열 렌더링용 날씨 데이터. 상세 페이지를 갔다 와도 유지되도록 Pinia 스토어에서 가져옴
+const cityListStore = useCityListStore()
 
-// [요구사항] 배열 렌더링용 날씨 데이터 (mock을 복제해 실시간 데이터로 덮어씀)
-const weatherList = ref(weatherMockData.map((city) => ({ ...city })))
 const isLoadingLiveWeather = ref(false)
 
 // [OpenWeatherMap 연동] 마운트 시 도시별 실시간 날씨를 조회해 mock 값을 덮어씀.
@@ -21,7 +21,7 @@ const isLoadingLiveWeather = ref(false)
 onMounted(async () => {
   isLoadingLiveWeather.value = true
   await Promise.allSettled(
-    weatherList.value.map(async (city) => {
+    cityListStore.cities.map(async (city) => {
       try {
         const { name: _liveName, ...liveWeather } = await fetchWeatherByQuery(city.english)
         // isLive: 실시간 데이터로 덮어썼음을 표시 (mock 전용 description 문구와 혼동되지 않도록)
@@ -41,9 +41,9 @@ const searchQuery = ref('')
 // 검색어로 필터링된 날씨 리스트 (computed)
 const filteredWeatherList = computed(() => {
   if (!searchQuery.value.trim()) {
-    return weatherList.value
+    return cityListStore.cities
   }
-  return weatherList.value.filter((city) => city.name.includes(searchQuery.value))
+  return cityListStore.cities.filter((city) => city.name.includes(searchQuery.value))
 })
 
 // [대한민국 도시 검색] 입력하는 즉시(엔터 없이) 대한민국 도시 전체 사전에서
@@ -52,7 +52,7 @@ const suggestedCities = computed(() => {
   const trimmed = searchQuery.value.trim()
   if (!trimmed) return []
 
-  const addedKeys = new Set(weatherList.value.map((city) => city.english))
+  const addedKeys = new Set(cityListStore.cities.map((city) => city.english))
   return koreanCities.filter((city) => city.name.includes(trimmed) && !addedKeys.has(city.english))
 })
 
@@ -79,10 +79,10 @@ const addCityFromSuggestion = async (candidate) => {
       ...liveWeather,
       name: candidate.name, // 한글 도시명은 사전 값을 우선 사용
     }
-    weatherList.value.unshift(newCity)
-    selectedCityInfo.value = `${newCity.name}이(가) 목록에 추가되었습니다.`
+    cityListStore.addCity(newCity)
+    // 검색어를 지우지 않음: 지우면 추천 목록이 사라지면서 전체 목록 화면으로 돌아간 것처럼 보임
+    selectedCityInfo.value = `${newCity.name}가 목록에 추가되었습니다.`
     weatherThemeStore.setStatus(newCity.status)
-    searchQuery.value = ''
   } catch (error) {
     apiSearchError.value = `'${candidate.name}'의 날씨 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`
   } finally {
@@ -92,7 +92,7 @@ const addCityFromSuggestion = async (candidate) => {
 
 // [목록 제거 과제] 카드의 제거 버튼 클릭 시 목록에서 제외
 const removeCity = (cityId) => {
-  weatherList.value = weatherList.value.filter((city) => city.id !== cityId)
+  cityListStore.removeCity(cityId)
 }
 
 // searchQuery 감시 (watchEffect 이용): 검색어가 바뀔 때마다 콘솔로그 작성
@@ -105,7 +105,7 @@ const selectedCityInfo = ref('카드를 클릭하거나 검색해 보세요.')
 
 // 카드(자식)를 클릭했을 때 실행되는 핸들러
 const selectCity = (city) => {
-  selectedCityInfo.value = `${city.name}이 선택되었습니다.`
+  selectedCityInfo.value = `${city.name}가 선택되었습니다.`
   // [배경 테마 과제] 선택된 도시의 날씨 상태에 맞춰 배경 테마 변경
   weatherThemeStore.setStatus(city.status)
 }
@@ -138,14 +138,17 @@ const showDetail = (city) => {
     <BaseDashboardCard>
       <h3>📍 지역별 날씨 현황 <span v-if="isLoadingLiveWeather" class="live-badge">실시간 데이터 불러오는 중…</span></h3>
 
-      <WeatherCard
-        v-for="city in filteredWeatherList"
-        :key="city.id"
-        :city="city"
-        @select-card="selectCity"
-        @click-detail="showDetail"
-        @remove="removeCity"
-      />
+      <!-- 카드가 3개를 넘어가면 스크롤로 볼 수 있도록 고정 높이 영역에 담음 -->
+      <div class="city-list-scroll">
+        <WeatherCard
+          v-for="city in filteredWeatherList"
+          :key="city.id"
+          :city="city"
+          @select-card="selectCity"
+          @click-detail="showDetail"
+          @remove="removeCity"
+        />
+      </div>
 
       <p v-if="filteredWeatherList.length === 0" class="no-result">
         {{ searchQuery.trim() ? '목록에 일치하는 도시가 없습니다.' : '표시할 도시가 없습니다. 위에서 도시를 검색해 보세요.' }}
@@ -210,6 +213,12 @@ const showDetail = (city) => {
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+.city-list-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .no-result {

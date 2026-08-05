@@ -4,15 +4,16 @@ import { useWeatherThemeStore } from '../stores/weatherThemeStore'
 
 const weatherThemeStore = useWeatherThemeStore()
 
-// 알려진 날씨 상태 → 배경 테마 클래스 매핑
+// 알려진 날씨 상태 → 배경 테마 클래스 매핑.
+// 구름조금 < 구름 < 구름많음 < 흐림 순으로 점점 짙어지도록 서로 다른 테마를 사용함.
 const THEME_CLASS_MAP = {
   맑음: 'theme-clear',
+  이슬비: 'theme-drizzle',
   비: 'theme-rain',
-  이슬비: 'theme-rain',
-  구름: 'theme-cloudy',
-  구름조금: 'theme-cloudy',
-  구름많음: 'theme-cloudy',
-  흐림: 'theme-cloudy',
+  구름조금: 'theme-clouds-few',
+  구름: 'theme-clouds',
+  구름많음: 'theme-clouds-many',
+  흐림: 'theme-overcast',
   눈: 'theme-snow',
   안개: 'theme-fog',
   천둥번개: 'theme-storm',
@@ -67,7 +68,22 @@ const backdropStyle = computed(() => {
   animation: sun-pulse 5s ease-in-out infinite;
 }
 
-/* 비: 진한 남색 바탕에 선명한 빗줄기 */
+/* 이슬비: 비보다 옅고 성긴 빗줄기가 조용히 내리는 느낌 */
+.theme-drizzle {
+  background:
+    radial-gradient(circle at 30% 10%, rgba(56, 189, 248, 0.14) 0%, transparent 55%),
+    linear-gradient(180deg, #0c1726 0%, #0e141f 100%),
+    repeating-linear-gradient(
+      115deg,
+      rgba(125, 211, 252, 0.16) 0px,
+      rgba(125, 211, 252, 0.16) 2px,
+      transparent 2px,
+      transparent 34px
+    );
+  animation: rain-fall 1.7s linear infinite;
+}
+
+/* 비: 진한 남색 바탕에 선명하고 촘촘한 빗줄기 */
 .theme-rain {
   background:
     radial-gradient(circle at 30% 10%, rgba(56, 189, 248, 0.22) 0%, transparent 55%),
@@ -82,14 +98,41 @@ const backdropStyle = computed(() => {
   animation: rain-fall 1.1s linear infinite;
 }
 
-/* 구름/흐림: 짙은 슬레이트 톤이 뭉게뭉게 뒤덮인 느낌 */
-.theme-cloudy {
+/* 구름조금: 맑은 하늘에 옅은 구름 한 두 조각 (구름 계열 중 가장 옅음) */
+.theme-clouds-few {
   background:
-    radial-gradient(circle at 20% 15%, rgba(203, 213, 225, 0.32) 0%, transparent 55%),
-    radial-gradient(circle at 78% 55%, rgba(100, 116, 139, 0.4) 0%, transparent 55%),
-    radial-gradient(circle at 45% 85%, rgba(148, 163, 184, 0.28) 0%, transparent 55%),
-    linear-gradient(180deg, #23262f 0%, #12141b 100%);
+    radial-gradient(circle at 30% 8%, rgba(226, 232, 240, 0.22) 0%, transparent 50%),
+    radial-gradient(circle at 75% 30%, rgba(148, 163, 184, 0.14) 0%, transparent 50%),
+    linear-gradient(180deg, #24314a 0%, #10131a 100%);
+  animation: drift 14s ease-in-out infinite;
+}
+
+/* 구름: 회색 구름이 적당히 낀 느낌 (구름조금보다 짙음) */
+.theme-clouds {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(203, 213, 225, 0.26) 0%, transparent 55%),
+    radial-gradient(circle at 78% 55%, rgba(100, 116, 139, 0.32) 0%, transparent 55%),
+    linear-gradient(180deg, #1c222c 0%, #0f1117 100%);
   animation: drift 12s ease-in-out infinite;
+}
+
+/* 구름많음: 하늘의 대부분을 구름이 덮은 느낌 (구름보다 짙음) */
+.theme-clouds-many {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(203, 213, 225, 0.36) 0%, transparent 60%),
+    radial-gradient(circle at 78% 50%, rgba(100, 116, 139, 0.44) 0%, transparent 60%),
+    radial-gradient(circle at 45% 85%, rgba(148, 163, 184, 0.28) 0%, transparent 55%),
+    linear-gradient(180deg, #1a1e26 0%, #0d0f14 100%);
+  animation: drift 10s ease-in-out infinite;
+}
+
+/* 흐림: 하늘이 완전히 뒤덮여 짓눌린 듯 가장 짙고 어두운 느낌 (구름 계열 중 가장 짙음) */
+.theme-overcast {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(100, 116, 139, 0.5) 0%, transparent 68%),
+    radial-gradient(circle at 70% 60%, rgba(71, 85, 105, 0.55) 0%, transparent 68%),
+    linear-gradient(180deg, #12151b 0%, #08090c 100%);
+  animation: drift 16s ease-in-out infinite;
 }
 
 /* 눈: 차갑고 밝은 화이트 톤 */
