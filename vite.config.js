@@ -6,7 +6,10 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import vuetify from 'vite-plugin-vuetify'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // GitHub Pages는 https://<user>.github.io/<repo>/ 하위 경로로 서빙되므로,
+  // 빌드 시에만 저장소 이름을 base로 지정함 (개발 서버는 그대로 '/')
+  base: command === 'build' ? '/skala-intro/' : '/',
   plugins: [
     vue(),
     vueDevTools(),
@@ -44,4 +47,4 @@ export default defineConfig({
       'vuetify/components/VTextField',
     ],
   },
-})
+}))

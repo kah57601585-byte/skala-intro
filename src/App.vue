@@ -21,12 +21,19 @@ const handleBackgroundClick = () => {
     <WeatherBackdrop />
 
     <!-- 날씨 카드가 아닌 곳(배경, 네비게이션 등)을 클릭하면 기본 다크 테마로 복귀 -->
-    <div class="app-layout" @click="handleBackgroundClick">
+    <div
+      class="app-layout"
+      @click="handleBackgroundClick"
+    >
       <!-- [요구사항 2] Navigation Bar + 단위 변경 UI -->
       <nav class="nav-bar">
         <div class="nav-links">
-          <RouterLink to="/">🏠 홈</RouterLink>
-          <RouterLink to="/about">ℹ️ 소개</RouterLink>
+          <RouterLink to="/">
+            🏠 홈
+          </RouterLink>
+          <RouterLink to="/about">
+            ℹ️ 소개
+          </RouterLink>
         </div>
         <UnitToggler />
       </nav>

@@ -1,6 +1,6 @@
 <template>
   <section class="dashboard-card">
-    <slot></slot>
+    <slot />
   </section>
 </template>
 

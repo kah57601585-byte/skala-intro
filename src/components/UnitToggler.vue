@@ -6,7 +6,11 @@ const configStore = useConfigStore()
 
 <template>
   <div class="unit-toggler">
-    <button type="button" title="클릭 시 단위 전환" @click="configStore.toggleUnit()">
+    <button
+      type="button"
+      title="클릭 시 단위 전환"
+      @click="configStore.toggleUnit()"
+    >
       현재 단위: {{ configStore.unitSymbol }}
     </button>
   </div>

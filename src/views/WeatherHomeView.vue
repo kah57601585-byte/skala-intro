@@ -84,6 +84,7 @@ const addCityFromSuggestion = async (candidate) => {
     selectedCityInfo.value = `${newCity.name}가 목록에 추가되었습니다.`
     weatherThemeStore.setStatus(newCity.status)
   } catch (error) {
+    console.error(`[날씨 API] '${candidate.name}' 실시간 날씨 조회 실패`, error)
     apiSearchError.value = `'${candidate.name}'의 날씨 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`
   } finally {
     addingCityKey.value = null
@@ -131,12 +132,20 @@ const showDetail = (city) => {
 
     <!-- 도시 검색 -->
     <BaseDashboardCard>
-      <SearchBar :query="searchQuery" @update-query="searchQuery = $event" />
+      <SearchBar
+        :query="searchQuery"
+        @update-query="searchQuery = $event"
+      />
     </BaseDashboardCard>
 
     <!-- 날씨 카드 리스트 -->
     <BaseDashboardCard>
-      <h3>📍 지역별 날씨 현황 <span v-if="isLoadingLiveWeather" class="live-badge">실시간 데이터 불러오는 중…</span></h3>
+      <h3>
+        📍 지역별 날씨 현황 <span
+          v-if="isLoadingLiveWeather"
+          class="live-badge"
+        >실시간 데이터 불러오는 중…</span>
+      </h3>
 
       <!-- 카드가 3개를 넘어가면 스크롤로 볼 수 있도록 고정 높이 영역에 담음 -->
       <div class="city-list-scroll">
@@ -150,15 +159,27 @@ const showDetail = (city) => {
         />
       </div>
 
-      <p v-if="filteredWeatherList.length === 0" class="no-result">
+      <p
+        v-if="filteredWeatherList.length === 0"
+        class="no-result"
+      >
         {{ searchQuery.trim() ? '목록에 일치하는 도시가 없습니다.' : '표시할 도시가 없습니다. 위에서 도시를 검색해 보세요.' }}
       </p>
 
       <!-- [대한민국 도시 검색] 입력하는 즉시 대한민국 도시 사전에서 매칭되는, 아직 목록에 없는 도시를 모두 추천 -->
-      <div v-if="suggestedCities.length > 0" class="suggestion-block">
-        <p class="suggestion-label">🇰🇷 추가할 수 있는 도시 ({{ suggestedCities.length }}개)</p>
+      <div
+        v-if="suggestedCities.length > 0"
+        class="suggestion-block"
+      >
+        <p class="suggestion-label">
+          🇰🇷 추가할 수 있는 도시 ({{ suggestedCities.length }}개)
+        </p>
         <div class="suggestion-scroll">
-          <div v-for="candidate in suggestedCities" :key="candidate.name" class="suggestion-row">
+          <div
+            v-for="candidate in suggestedCities"
+            :key="candidate.name"
+            class="suggestion-row"
+          >
             <span>{{ candidate.name }}</span>
             <button
               class="add-btn"
@@ -171,15 +192,25 @@ const showDetail = (city) => {
         </div>
       </div>
 
-      <p v-else-if="searchQuery.trim() && filteredWeatherList.length === 0" class="no-result">
+      <p
+        v-else-if="searchQuery.trim() && filteredWeatherList.length === 0"
+        class="no-result"
+      >
         '{{ searchQuery }}'와 일치하는 대한민국 도시가 없습니다. 시 단위 도시명으로 검색해 보세요. (예: 전주시, 통영시, 목포시)
       </p>
 
-      <p v-if="apiSearchError" class="api-search-error">{{ apiSearchError }}</p>
+      <p
+        v-if="apiSearchError"
+        class="api-search-error"
+      >
+        {{ apiSearchError }}
+      </p>
     </BaseDashboardCard>
 
     <!-- 카드 클릭 결과가 표시되는 상태바 -->
-    <div class="status-bar">{{ selectedCityInfo }}</div>
+    <div class="status-bar">
+      {{ selectedCityInfo }}
+    </div>
   </div>
 </template>
 

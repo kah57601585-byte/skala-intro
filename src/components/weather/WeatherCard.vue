@@ -44,28 +44,52 @@ const iconColor = computed(() => (props.city.temp >= 25 ? 'error' : 'primary'))
 </script>
 
 <template>
-  <v-card class="weather-card" @click.stop="$emit('select-card', city)">
+  <v-card
+    class="weather-card"
+    @click.stop="$emit('select-card', city)"
+  >
     <v-card-item :title="city.name">
-      <template #subtitle>{{ city.status }}</template>
+      <template #subtitle>
+        {{ city.status }}
+      </template>
     </v-card-item>
 
     <v-card-text class="py-0">
-      <v-row class="align-center" density="compact">
-        <v-col cols="6" class="text-h4 font-weight-light">
+      <v-row
+        class="align-center"
+        density="compact"
+      >
+        <v-col
+          cols="6"
+          class="text-h4 font-weight-light"
+        >
           {{ displayTemp }}{{ configStore.unitSymbol }}
         </v-col>
-        <v-col cols="6" class="text-right">
-          <v-icon :color="iconColor" :icon="weatherIcon" size="56" />
+        <v-col
+          cols="6"
+          class="text-right"
+        >
+          <v-icon
+            :color="iconColor"
+            :icon="weatherIcon"
+            size="56"
+          />
         </v-col>
       </v-row>
     </v-card-text>
 
     <div class="d-flex py-2 justify-space-between">
-      <v-list-item density="compact" prepend-icon="mdi-weather-windy">
+      <v-list-item
+        density="compact"
+        prepend-icon="mdi-weather-windy"
+      >
         <v-list-item-subtitle>{{ city.windSpeed }} m/s</v-list-item-subtitle>
       </v-list-item>
 
-      <v-list-item density="compact" prepend-icon="mdi-water-percent">
+      <v-list-item
+        density="compact"
+        prepend-icon="mdi-water-percent"
+      >
         <v-list-item-subtitle>{{ city.humidity }}%</v-list-item-subtitle>
       </v-list-item>
     </div>
@@ -73,9 +97,20 @@ const iconColor = computed(() => (props.city.temp >= 25 ? 'error' : 'primary'))
     <v-divider />
 
     <v-card-actions>
-      <v-btn variant="text" @click.stop="$emit('remove', city.id)">제거</v-btn>
+      <v-btn
+        variant="text"
+        @click.stop="$emit('remove', city.id)"
+      >
+        제거
+      </v-btn>
       <v-spacer />
-      <v-btn color="primary" variant="text" @click.stop="$emit('click-detail', city)">상세보기</v-btn>
+      <v-btn
+        color="primary"
+        variant="text"
+        @click.stop="$emit('click-detail', city)"
+      >
+        상세보기
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>

@@ -75,25 +75,50 @@ const displayFeelsLike = computed(() => {
 <template>
   <div class="weather-detail">
     <!-- .stop: 배경 클릭으로 오인되어 테마가 리셋되지 않도록 전파 차단 -->
-    <RouterLink to="/" class="back-link" @click.stop>← 대시보드로 돌아가기</RouterLink>
+    <RouterLink
+      to="/"
+      class="back-link"
+      @click.stop
+    >
+      ← 대시보드로 돌아가기
+    </RouterLink>
 
     <BaseDashboardCard v-if="city">
       <h2>
         <span class="gradient-text">{{ city.name }} 상세 기상관측 정보</span>
-        <span v-if="isLoadingLiveWeather" class="live-badge">실시간 데이터 불러오는 중…</span>
+        <span
+          v-if="isLoadingLiveWeather"
+          class="live-badge"
+        >실시간 데이터 불러오는 중…</span>
       </h2>
-      <p class="status">현재 상태: {{ city.status }}</p>
+      <p class="status">
+        현재 상태: {{ city.status }}
+      </p>
       <ul class="detail-list">
         <li>🌡 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</li>
-        <li v-if="displayFeelsLike != null">🤔 체감 온도: {{ displayFeelsLike }}{{ configStore.unitSymbol }}</li>
+        <li v-if="displayFeelsLike != null">
+          🤔 체감 온도: {{ displayFeelsLike }}{{ configStore.unitSymbol }}
+        </li>
         <li>💧 습도: {{ city.humidity }}%</li>
         <li>🌬 풍속: {{ city.windSpeed }} m/s</li>
         <!-- precipitationProb는 mock 전용 필드 (Current Weather API엔 강수확률이 없음) -->
-        <li v-if="!city.isLive && city.precipitationProb != null">☔ 강수확률: {{ city.precipitationProb }}%</li>
+        <li v-if="!city.isLive && city.precipitationProb != null">
+          ☔ 강수확률: {{ city.precipitationProb }}%
+        </li>
       </ul>
       <!-- description도 mock 전용 문구라 실시간 데이터일 땐 다른 안내로 대체 -->
-      <p v-if="city.isLive" class="description">🔴 실시간 관측 데이터 기준입니다.</p>
-      <p v-else class="description">{{ city.description }}</p>
+      <p
+        v-if="city.isLive"
+        class="description"
+      >
+        🔴 실시간 관측 데이터 기준입니다.
+      </p>
+      <p
+        v-else
+        class="description"
+      >
+        {{ city.description }}
+      </p>
     </BaseDashboardCard>
 
     <BaseDashboardCard v-else>

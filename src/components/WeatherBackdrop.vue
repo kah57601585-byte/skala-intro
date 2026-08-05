@@ -47,7 +47,11 @@ const backdropStyle = computed(() => {
 </script>
 
 <template>
-  <div class="weather-backdrop" :class="backdropClass" :style="backdropStyle"></div>
+  <div
+    class="weather-backdrop"
+    :class="backdropClass"
+    :style="backdropStyle"
+  />
 </template>
 
 <style scoped>
